@@ -7,6 +7,7 @@ version: 2.1
 
 orbs:
   owasp: entur/owasp@0.0.6
+  snyk: snyk/snyk@0.0.9
 
 executors:
   builder:
@@ -30,6 +31,12 @@ jobs:
             - gradle-{{ checksum "build.gradle" }}
             - gradle-
       - run: ./gradlew build
+      - snyk/scan:
+          fail-on-issues: false
+          monitor-on-build: true
+          additional-arguments: "--configuration-matching='^((?!test).)*$'"
+          project: '${CIRCLE_PROJECT_REPONAME}/app'
+          organization: 'digital-probation-services'
       - run:
           name: Record the Application Version
           command: |
@@ -84,6 +91,13 @@ jobs:
             docker tag mojdigitalstudio/community-api:$APP_VERSION mojdigitalstudio/community-api:latest
             docker push mojdigitalstudio/community-api:$APP_VERSION
             docker push mojdigitalstudio/community-api:latest
+      - snyk/scan:
+          docker-image-name: 'mojdigitalstudio/community-api:latest'
+          target-file: 'Dockerfile'
+          fail-on-issues: false
+          monitor-on-build: true
+          project: '${CIRCLE_PROJECT_REPONAME}/container'
+          organization: 'digital-probation-services'
 
 workflows:
   version: 2

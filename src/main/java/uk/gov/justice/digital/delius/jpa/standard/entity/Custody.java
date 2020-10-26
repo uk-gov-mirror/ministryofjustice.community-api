@@ -92,6 +92,12 @@ public class Custody extends AuditableEntity {
     @Column(name = "PSS_START_DATE")
     private LocalDate pssStartDate;
 
+    @Column(name = "PC_TELEPHONE_NUMBER")
+    private String prisonTelephoneNumber;
+
+    @Column(name = "PRISON_OFFICER")
+    private String prisonOfficer;
+
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval=true, mappedBy = "custody")
     private List<PssRequirement> pssRequirements;
 

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
@@ -23,6 +24,10 @@ public class CreatePrisonOffenderManager {
     // This annotation appears to be ignored by swagger docs and nobody seems to care: https://github.com/springfox/springfox/issues/2237
     @ApiModelProperty(value = "Name of offender manager. If passed then must contain both forename(s) and surname", example = "officer: {\"forenames\": \"John\", \"surname\": \"Smith\" }")
     private Human officer;
+    @ApiModelProperty(value = "Email address of offender manager", example = "john.smith@justice.gov.uk")
+    private String email;
+    @ApiModelProperty(value = "Telephone number of offender manager", example = "0114 555 5555")
+    private String telephone;
     @ApiModelProperty(value = "Officer staff ID. If not present officer will be used to lookup staff member", example = "1234567")
     private Long staffId;
     @ApiModelProperty(value = "Prison institution code in NOMIS", required = true, example = "MDI")
@@ -60,6 +65,10 @@ public class CreatePrisonOffenderManager {
         }
 
         return Optional.empty();
+    }
+
+    public boolean hasContactDetails() {
+        return StringUtils.isNotBlank(email) || StringUtils.isNotBlank(telephone);
     }
 
 }

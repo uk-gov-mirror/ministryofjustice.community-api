@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
@@ -279,6 +281,14 @@ public class ConvictionService {
         return ConvictionTransformer.custodyOf(event
                 .getDisposal()
                 .getCustody());
+    }
+
+    @Transactional
+    public void setPrisonOffenderManagerContact(Offender offender, String email, String telephone) {
+        activeCustodyEvents(offender.getOffenderId()).stream().map(Event::getDisposal).map(Disposal::getCustody).forEach(custody -> {
+            custody.setPrisonTelephoneNumber(telephone);
+            custody.setPrisonOfficer(email);
+        });
     }
 
     private void addContactForBulkCustodyKeyDateUpdate(Long offenderId, Event event, List<KeyDate> currentKeyDates, List<String> keyDatesToDelete, Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {

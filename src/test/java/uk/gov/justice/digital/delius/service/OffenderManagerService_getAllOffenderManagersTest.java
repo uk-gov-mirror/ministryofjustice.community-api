@@ -36,6 +36,8 @@ public class OffenderManagerService_getAllOffenderManagersTest {
     private ReferenceDataService referenceDataService;
     @Mock
     private ContactService contactService;
+    @Mock
+    private ConvictionService convictionService;
 
     private OffenderManagerService offenderManagerService;
 
@@ -49,7 +51,8 @@ public class OffenderManagerService_getAllOffenderManagersTest {
                 staffService,
                 teamService,
                 referenceDataService,
-                contactService);
+                contactService,
+                convictionService);
     }
 
     @Test

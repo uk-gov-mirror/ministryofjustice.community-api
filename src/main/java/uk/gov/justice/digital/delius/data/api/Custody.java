@@ -18,4 +18,8 @@ public class Custody {
     private Institution institution;
     @ApiModelProperty(value = "Key sentence dates of particular interest to custody")
     private CustodyRelatedKeyDates keyDates;
+    @ApiModelProperty(value = "Email address of prison offender manager", example = "john.smith@justice.gov.uk")
+    private String prisonEmail;
+    @ApiModelProperty(value = "Telephone number of prison offender manager", example = "0114 555 5555")
+    private String prisonTelephone;
 }

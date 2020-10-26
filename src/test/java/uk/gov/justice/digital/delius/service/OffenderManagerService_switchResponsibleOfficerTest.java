@@ -54,6 +54,8 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
     private ReferenceDataService referenceDataService;
     @Mock
     private ContactService contactService;
+    @Mock
+    private ConvictionService convictionService;
     @Captor
     private ArgumentCaptor<ResponsibleOfficer> responsibleOfficerArgumentCaptor;
 
@@ -69,7 +71,8 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
                 staffService,
                 teamService,
                 referenceDataService,
-                contactService);
+                contactService,
+                convictionService);
 
     }
 

@@ -5,11 +5,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
+import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -148,7 +151,9 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                                 .surname("Marke")
                                 .forenames("Joe")
                                 .build(),
-                        "BWI"))
+                        "BWI",
+                        "joe.marke@justice,gov.uk",
+                        "0114 123 1234"))
                 .when()
                 .put("/offenders/nomsNumber/G9542VP/prisonOffenderManager")
                 .then()
@@ -211,6 +216,22 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
         assertThat(prisonOffenderManager(offenderManagers).orElseThrow().getIsResponsibleOfficer()).isTrue();
         assertThat(prisonOffenderManager(offenderManagers).orElseThrow().getStaffCode()).isEqualTo(newPrisonOffenderManager.getStaffCode());
         assertThat(communityOffenderManager(offenderManagers)).isPresent();
+
+        final var convictions = given()
+                .auth()
+                .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/G9542VP/convictions")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(Conviction[].class);
+
+        final var custody = Arrays.stream(convictions).map(Conviction::getCustody).filter(Objects::nonNull).findAny().orElseThrow();
+        assertThat(custody.getPrisonEmail()).isEqualTo("joe.marke@justice,gov.uk");
+        assertThat(custody.getPrisonTelephone()).isEqualTo("0114 123 1234");
     }
 
     @Test
@@ -329,11 +350,13 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .build());
     }
 
-    private String createPrisonOffenderManagerOf(final Human staff, final String nomsPrisonInstitutionCode) {
+    private String createPrisonOffenderManagerOf(final Human staff, final String nomsPrisonInstitutionCode, final String email, final String telephone) {
         return writeValueAsString(CreatePrisonOffenderManager
                 .builder()
                 .officer(staff)
                 .nomsPrisonInstitutionCode(nomsPrisonInstitutionCode)
+                .email(email)
+                .telephone(telephone)
                 .build());
     }
 

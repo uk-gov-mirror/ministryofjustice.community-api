@@ -42,6 +42,8 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
     private ReferenceDataService referenceDataService;
     @Mock
     private ContactService contactService;
+    @Mock
+    private ConvictionService convictionService;
     @Captor
     private ArgumentCaptor<PrisonOffenderManager> prisonOffenderManagerArgumentCaptor;
     @Captor
@@ -59,7 +61,8 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
                 staffService,
                 teamService,
                 referenceDataService,
-                contactService);
+                contactService,
+                convictionService);
 
         when(probationAreaRepository.findByInstitutionByNomsCDECode(any())).thenAnswer(args -> {
             var code = args.getArgument(0).toString();

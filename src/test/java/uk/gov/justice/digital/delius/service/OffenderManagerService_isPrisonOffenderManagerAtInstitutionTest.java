@@ -33,6 +33,8 @@ public class OffenderManagerService_isPrisonOffenderManagerAtInstitutionTest {
     private ReferenceDataService referenceDataService;
     @Mock
     private ContactService contactService;
+    @Mock
+    private ConvictionService convictionService;
 
     private OffenderManagerService offenderManagerService;
 
@@ -46,7 +48,8 @@ public class OffenderManagerService_isPrisonOffenderManagerAtInstitutionTest {
                 staffService,
                 teamService,
                 referenceDataService,
-                contactService);
+                contactService,
+                convictionService);
     }
 
     @Test

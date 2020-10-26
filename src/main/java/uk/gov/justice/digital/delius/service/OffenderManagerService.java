@@ -48,6 +48,7 @@ public class OffenderManagerService {
     private final TeamService teamService;
     private final ReferenceDataService referenceDataService;
     private final ContactService contactService;
+    private final ConvictionService convictionService;
 
     @Transactional(readOnly = true)
     public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForNomsNumber(final String nomsNumber) {
@@ -73,11 +74,15 @@ public class OffenderManagerService {
         final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(prisonOffenderManager.getNomsPrisonInstitutionCode())
                 .orElseThrow(() -> new InvalidRequestException(String.format("Prison NOMS code %s not found", prisonOffenderManager.getNomsPrisonInstitutionCode())));
 
-        return maybeOffender.map(offender ->
-                allocatePrisonOffenderManager(
-                        probationArea,
-                        staffService.findOrCreateStaffInArea(prisonOffenderManager.getOfficer(), probationArea),
-                        offender));
+        return maybeOffender.map(offender -> {
+            if (prisonOffenderManager.hasContactDetails()) {
+                convictionService.setPrisonOffenderManagerContact(offender, prisonOffenderManager.getEmail(), prisonOffenderManager.getTelephone());
+            }
+            return allocatePrisonOffenderManager(
+                    probationArea,
+                    staffService.findOrCreateStaffInArea(prisonOffenderManager.getOfficer(), probationArea),
+                    offender);
+                });
     }
 
 

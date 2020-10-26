@@ -187,6 +187,8 @@ public class ConvictionTransformer {
         return Custody.builder().bookingNumber(custody.getPrisonerNumber())
                 .institution(Optional.ofNullable(custody.getInstitution()).map(InstitutionTransformer::institutionOf)
                         .orElse(null))
+                .prisonEmail(custody.getPrisonOfficer())
+                .prisonTelephone(custody.getPrisonTelephoneNumber())
                 .keyDates(Optional.ofNullable(custody.getKeyDates()).map(ConvictionTransformer::custodyRelatedKeyDatesOf)
                         .orElse(CustodyRelatedKeyDates.builder().build())).build();
     }

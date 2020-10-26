@@ -23,6 +23,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.entity.TransferReason;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateActiveCustodialConvictionsException;
@@ -71,6 +72,9 @@ public class ConvictionServiceTest {
 
     @Mock
     private IAPSNotificationService iapsNotificationService;
+
+    @Mock
+    private Offender offender;
 
     @BeforeEach
     void setUp() {
@@ -591,6 +595,31 @@ public class ConvictionServiceTest {
             assertThat(actualEvent).isEqualTo(expectedEvent);
         }
 
+        @Test
+        @DisplayName("given a valid offender and prison officer contact details, when setPrisonOffenderManagerContact called " +
+                ", then contact details updated for the prison officer")
+        public void prisonOfficerContactSet_WhenCalledWithOffenderAndPrisonOfficerContactDetails(){
+
+            ImmutableList<Event> custodialEvents = ImmutableList.of(
+                    aCustodialEvent("X65432", true)
+                            .toBuilder()
+                            .eventId(999L)
+                            .build(),
+                    aCustodialEvent("X65432", true)
+                            .toBuilder()
+                            .eventId(999L)
+                            .build());
+
+            when(eventRepository.findByOffenderIdWithCustody(99L)).thenReturn(custodialEvents);
+            when(offender.getOffenderId()).thenReturn(99L);
+            final String email = "john.travis@justice.gov.uk";
+            final String telephone = "0475544522";
+            convictionService.setPrisonOffenderManagerContact(offender, email, telephone);
+            custodialEvents.stream().map(Event::getDisposal).map(Disposal::getCustody).forEach( custody -> {
+                assertThat(custody.getPrisonOfficer()).isEqualTo(email);
+                assertThat(custody.getPrisonTelephoneNumber()).isEqualTo(telephone);
+            });
+        }
 
     }
 

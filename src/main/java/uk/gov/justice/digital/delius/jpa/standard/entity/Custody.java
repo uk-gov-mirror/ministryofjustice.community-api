@@ -92,7 +92,7 @@ public class Custody extends AuditableEntity {
     @Column(name = "PSS_START_DATE")
     private LocalDate pssStartDate;
 
-    @Column(name = "PC_TELEPHONE_NUMBER")
+    @Column(name = "PO_TELEPHONE_NUMBER")
     private String prisonTelephoneNumber;
 
     @Column(name = "PRISON_OFFICER")
